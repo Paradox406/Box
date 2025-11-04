@@ -388,7 +388,7 @@
     }
   }
 
-  // submit handling (no real server) - updates votes if voting or simulates purchase
+  // === REGISTRO DE VOTOS Y COMPRAS ===
   function handleSubmit(e){
     e.preventDefault();
     const mode = modalModeInput.value;
@@ -397,9 +397,16 @@
     const email = document.getElementById('email').value.trim();
     if(!name || !email) { alert('Completa nombre y correo'); return; }
 
+    // ✅ Verificar si el correo ya votó antes
+    const votedEmails = JSON.parse(localStorage.getItem('votedEmails') || '[]');
+    if (votedEmails.includes(email)) {
+      alert('Este correo ya ha votado. Solo se permite un voto por persona.');
+      return;
+    }
+
     if(mode==='vote'){
       state[person]++;
-      saveVotes(); // 🔹 guarda votos en localStorage
+      saveVotes(); // guarda votos en localStorage
       refreshUI();
       showToast(`Gracias ${name}. Tu voto por ${(person==='A')?'Shuls':'Carlos'} fue registrado.`);
     } else {
@@ -408,14 +415,17 @@
         const opt = ticketType.options[ticketType.selectedIndex];
         price = opt.getAttribute('data-price') || '0';
       }
-      // increment support vote on purchase
       state[person]++;
-      saveVotes(); // 🔹 guarda votos también al comprar
+      saveVotes(); // guarda votos también al comprar
       refreshUI();
-      showToast(`¡Compra simulada! ${name}, pagaste S/ ${price}.00 por ${ (person==='A')?'Streamer A':'Streamer B' }. Revisa tu correo (${email}).`);
+      showToast(`¡Compra simulada! ${name}, pagaste S/ ${price}.00 por ${(person==='A')?'Shuls':'Carlos'}. Revisa tu correo (${email}).`);
     }
 
-    // close modal and reset
+    // ✅ Guardar correo para que no vuelva a votar
+    votedEmails.push(email);
+    localStorage.setItem('votedEmails', JSON.stringify(votedEmails));
+
+    // cerrar modal y resetear formulario
     setTimeout(closeModal,400);
     document.getElementById('modalForm').reset();
     onActionChange();
@@ -423,14 +433,14 @@
   }
 
   // UI refresh
-function refreshUI(){
-  document.getElementById('resA').textContent = `Votos: ${state.A}`;
-  document.getElementById('resB').textContent = `Votos: ${state.B}`;
-  document.getElementById('globalText').textContent = `Shuls: ${state.A} votos  —  Carlos: ${state.B} votos`;
-  document.getElementById('peleaText').textContent = `Shuls: ${state.A} votos  —  Carlos: ${state.B} votos`;
-}
+  function refreshUI(){
+    document.getElementById('resA').textContent = `Votos: ${state.A}`;
+    document.getElementById('resB').textContent = `Votos: ${state.B}`;
+    document.getElementById('globalText').textContent = `Shuls: ${state.A} votos  —  Carlos: ${state.B} votos`;
+    document.getElementById('peleaText').textContent = `Shuls: ${state.A} votos  —  Carlos: ${state.B} votos`;
+  }
 
-  // simple toast (small ephemeral notice)
+  // simple toast
   function showToast(msg){
     const t = document.createElement('div');
     t.textContent = msg; 
@@ -448,7 +458,7 @@ function refreshUI(){
     setTimeout(()=>t.remove(),2400);
   }
 
-  // close modal on backdrop click (but keep if clicking modal)
+  // close modal on backdrop click
   backdrop.addEventListener('click', (ev)=>{
     if(ev.target === backdrop) closeModal();
   });
@@ -460,6 +470,7 @@ function refreshUI(){
   updatePrice();
   refreshUI();
 </script>
+
 
 <div class="contenedor-videos">
     <video controls>
@@ -477,6 +488,7 @@ function refreshUI(){
 
 </body>
 </html>
+
 
 
 
