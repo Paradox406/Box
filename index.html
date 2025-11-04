@@ -401,7 +401,7 @@
       state[person]++;
       saveVotes(); // 🔹 guarda votos en localStorage
       refreshUI();
-      showToast(`Gracias ${name}. Tu voto por ${(person==='A')?'Streamer A':'Streamer B'} fue registrado.`);
+      showToast(`Gracias ${name}. Tu voto por ${(person==='A')?'Shuls':'Carlos'} fue registrado.`);
     } else {
       let price = '0';
       if(ticketType && ticketType.options.length>0){
@@ -423,12 +423,12 @@
   }
 
   // UI refresh
-  function refreshUI(){
-    document.getElementById('resA').textContent = `Votos: ${state.A}`;
-    document.getElementById('resB').textContent = `Votos: ${state.B}`;
-    document.getElementById('globalText').textContent = `A: ${state.A} votos  —  B: ${state.B} votos`;
-    document.getElementById('peleaText').textContent = `A: ${state.A} votos  —  B: ${state.B} votos`;
-  }
+function refreshUI(){
+  document.getElementById('resA').textContent = `Votos: ${state.A}`;
+  document.getElementById('resB').textContent = `Votos: ${state.B}`;
+  document.getElementById('globalText').textContent = `Shuls: ${state.A} votos  —  Carlos: ${state.B} votos`;
+  document.getElementById('peleaText').textContent = `Shuls: ${state.A} votos  —  Carlos: ${state.B} votos`;
+}
 
   // simple toast (small ephemeral notice)
   function showToast(msg){
@@ -477,6 +477,7 @@
 
 </body>
 </html>
+
 
 
 
