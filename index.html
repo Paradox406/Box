@@ -311,8 +311,14 @@
 </div>
 
 <script>
-  // Votes state
-  const state = { A:0, B:0 };
+  // === VOTOS CON LOCALSTORAGE ===
+  // cargar votos desde localStorage si existen
+  const state = JSON.parse(localStorage.getItem('votos')) || { A: 0, B: 0 };
+
+  // guardar votos en localStorage
+  function saveVotes() {
+    localStorage.setItem('votos', JSON.stringify(state));
+  }
 
   // Modal controls
   const backdrop = document.getElementById('modalBackdrop');
@@ -396,6 +402,7 @@
 
     if(mode==='vote'){
       state[person]++;
+      saveVotes(); // 🔹 guarda votos en localStorage
       refreshUI();
       showToast(`Gracias ${name}. Tu voto por ${(person==='A')?'Streamer A':'Streamer B'} fue registrado.`);
     } else {
@@ -406,6 +413,7 @@
       }
       // increment support vote on purchase
       state[person]++;
+      saveVotes(); // 🔹 guarda votos también al comprar
       refreshUI();
       showToast(`¡Compra simulada! ${name}, pagaste S/ ${price}.00 por ${ (person==='A')?'Streamer A':'Streamer B' }. Revisa tu correo (${email}).`);
     }
@@ -413,7 +421,6 @@
     // close modal and reset
     setTimeout(closeModal,400);
     document.getElementById('modalForm').reset();
-    // ensure UI elements reflect reset state
     onActionChange();
     updatePrice();
   }
@@ -429,9 +436,16 @@
   // simple toast (small ephemeral notice)
   function showToast(msg){
     const t = document.createElement('div');
-    t.textContent = msg; t.style.position='fixed'; t.style.right='20px'; t.style.bottom='20px';
-    t.style.background='linear-gradient(90deg,#3ae2ff,#6aa7ff)'; t.style.color='#012'; t.style.padding='.7rem 1rem';
-    t.style.borderRadius='10px'; t.style.boxShadow='0 8px 20px rgba(0,0,0,0.5)'; t.style.zIndex=200;
+    t.textContent = msg; 
+    t.style.position='fixed'; 
+    t.style.right='20px'; 
+    t.style.bottom='20px';
+    t.style.background='linear-gradient(90deg,#3ae2ff,#6aa7ff)'; 
+    t.style.color='#012'; 
+    t.style.padding='.7rem 1rem';
+    t.style.borderRadius='10px'; 
+    t.style.boxShadow='0 8px 20px rgba(0,0,0,0.5)'; 
+    t.style.zIndex=200;
     document.body.appendChild(t);
     setTimeout(()=>{ t.style.transition='opacity .5s'; t.style.opacity='0'; },1800);
     setTimeout(()=>t.remove(),2400);
@@ -445,7 +459,7 @@
   // keyboard ESC to close
   document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 
-  // init price
+  // init price and UI with stored votes
   updatePrice();
   refreshUI();
 </script>
@@ -466,5 +480,6 @@
 
 </body>
 </html>
+
 
 
